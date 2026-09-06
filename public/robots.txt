@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://strayaword.correia95.workers.dev/sitemap.xml
