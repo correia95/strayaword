@@ -35,11 +35,29 @@ function shuffled<T>(items: T[], seed: number): T[] {
   return arr;
 }
 
+// A hand-picked opening run so the first fortnight is all instantly recognisable.
+const OPENERS = [
+  'BOGAN', 'SERVO', 'DUNNY', 'CHOOK', 'SANGA', 'BONZA', 'DAGGY',
+  'TINNY', 'GALAH', 'CUPPA', 'SNAGS', 'CROOK', 'BEAUT', 'YAKKA',
+];
+
+const byWord = (w: string): SlangWord =>
+  ANSWERS.find((a) => a.word === w) ?? ANSWERS[0];
+
 export function wordForPuzzle(n: number): SlangWord {
+  if (n >= 1 && n <= OPENERS.length) return byWord(OPENERS[n - 1]);
+
+  const k = n - OPENERS.length - 1; // 0-based position after the opening run
+  const rest = ANSWERS.filter((a) => !OPENERS.includes(a.word));
+
+  // First pass: the remaining words, shuffled, with no repeats.
+  if (k < rest.length) return shuffled(rest, 1000)[k];
+
+  // After every word has appeared once, cycle the full list on a new shuffle each time.
+  const k2 = k - rest.length;
   const len = ANSWERS.length;
-  const idx = ((n % len) + len) % len;
-  const cycle = Math.floor(n / len);
-  return shuffled(ANSWERS, 1000 + cycle)[idx];
+  const cycle = Math.floor(k2 / len);
+  return shuffled(ANSWERS, 2000 + cycle)[k2 % len];
 }
 
 /** Standard Wordle scoring with correct duplicate-letter handling. */
